@@ -34,7 +34,7 @@ const Styles = styled.div`
     display:flex;
     justify-content:center;
   }
-  .container {
+  .CharContainer {
     display:inline-block;
   }
   input {
@@ -86,7 +86,7 @@ const Styles = styled.div`
         width:175px;
       }
       :nth-child(2){
-        width:75px;
+        width:85px;
       }
       :nth-child(3){
         width:140px;
@@ -164,7 +164,7 @@ function Table({ columns, data }) {
   //renders table
   return (
   <div className="container-container">
-    <div className="container">
+    <div className="CharContainer">
       {console.log(globalFilter)}
       <h2>Wondering the status of your favorite restaurant near campus?</h2>
       <h3>Search for it below.</h3>

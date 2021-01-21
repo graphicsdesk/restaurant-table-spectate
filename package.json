@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "parcel src/index.html --global script",
-    "build": "parcel build src/index.html --global script --public-url . --no-content-hash",
+    "build": "parcel build src/index.html --global script --public-url https://spectator-static-assets.s3.amazonaws.com/restaurant-table-spectate --no-content-hash",
     "postinstall": "patch-package"
   },
   "devDependencies": {
@@ -37,7 +37,7 @@
     "USE_NEWS_NAV": true,
     "USE_EYE_NAV": false,
     "USE_COVER_HED": false,
-    "IS_EMBED": false,
+    "IS_EMBED": true,
     "DOC_URL": null
   }
 }

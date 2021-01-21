@@ -1,15 +1,63 @@
-import React from "react";
-import styled from "styled-components";
-import { useTable, useFilters, useSortBy, usePagination, useGlobalFilter, useAsyncDebounce} from 'react-table'
-
-
+import React from 'react';
+import styled from 'styled-components';
+import {
+  useTable,
+  useFilters,
+  useSortBy,
+  usePagination,
+  useGlobalFilter,
+  useAsyncDebounce,
+} from 'react-table';
 
 //style
 const Styles = styled.div`
   padding: 1rem;
+  font-family:roboto;
+  h2 {
+    margin-bottom: 10px;
+    max-width: 550px;
+  }
+  h3 {
+    margin-top:5px;
+    margin-bottom: 10px;
+    font-weight:400;
+  }
+  p.credit{
+    color: a9a9a9;
+    margin: 10 auto 0;
+    max-width: 475px;
+    text-align: center;
+    margin-top:10px;
+    font-size:13;
+  }
+  .container-container{
+    display:flex;
+    justify-content:center;
+  }
+  .container {
+    display:inline-block;
+  }
+  input {
+    display: block;
+    width: 200px;
+    height: 24px;
+  }
+  .page {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .pageNum {
+    justify-content: center;
+    display: flex;
+    margin-top: 5px;
+    em {
+      margin-left: 3px;
+    }
+  }
   table {
     border-spacing: 0;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
 
     tr {
       :last-child {
@@ -19,15 +67,33 @@ const Styles = styled.div`
       }
     }
 
-    th,
+    tr.closed{
+      background-color: #C7C6C1;
+    }
+
+    th {
+      text-align:left;
+      padding: 0.5rem;
+      font-weight: 300;
+      border-bottom: 1px solid black;
+    }
     td {
       margin: 0;
       padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
+      border-bottom: 1px solid #808080;
+      /*border-right: 1px solid black;*/
+      :first-child{
+        width:175px;
+      }
+      :nth-child(2){
+        width:75px;
+      }
+      :nth-child(3){
+        width:140px;
+      }
       :last-child {
         border-right: 0;
+        width: 75px;
       }
     }
   }
@@ -39,8 +105,8 @@ function Table({ columns, data }) {
     () => ({
       Filter: TextFilter,
     }),
-    []
-   )
+    [],
+  );
 
   const {
     getTableProps,
@@ -59,98 +125,109 @@ function Table({ columns, data }) {
     //state,
     //preGlobalFilteredRows,
     setGlobalFilter,
-  } = useTable({
-    columns,
-    data,
-    //filtering
-    defaultColumn,
-    initialState: { pageSize: 20},
-  },
-  //hook arguments
-  useFilters,
-  useGlobalFilter,
-  useSortBy,
-  usePagination,
-  )
+  } = useTable(
+    {
+      columns,
+      data,
+      //filtering
+      defaultColumn,
+      initialState: { 
+        pageSize: 15,
+        sortBy: [
+          {
+              id: 'name',
+              desc: false
+          }
+      ] 
+      },
+    },
+    //hook arguments
+    useFilters,
+    useGlobalFilter,
+    useSortBy,
+    usePagination,
+  );
 
-//filtering
-function TextFilter({
-  column: { filterValue, setFilter },
-  }) {
-  
-  return (
-    <input
-      value={filterValue || ''}
-      onChange={e => {
-        setFilter(e.target.value || undefined)
-      }}
-      placeholder={`Search`}
-    />
-  )
+  //filtering
+  function TextFilter({ column: { filterValue, setFilter } }) {
+    return (
+      <input
+        value={filterValue || ''}
+        onChange={e => {
+          setFilter(e.target.value || undefined);
+        }}
+        placeholder={`Search`}
+      />
+    );
   }
 
   //renders table
   return (
-  <div>
-    {console.log(globalFilter)}
-    <input
-      type="text"
-      value={globalFilter || ""}
-      onChange={e => setGlobalFilter(e.target.value)}
-      placeholder={`Search`}
-    />
-    <table {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-
-              /*sorting and filering */
-              <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                {column.render('Header')}
-                {/* direction indicator */}
-                <span>
-                  {column.isSorted
-                    ? column.isSortedDesc
-                      ? ' 🔽'
-                      : ' 🔼'
-                    : ''}
-                </span>
-              </th>
-              
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-
-        {page.map(row => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
-              })}
+  <div className="container-container">
+    <div className="container">
+      {console.log(globalFilter)}
+      <h2>Wondering the status of your favorite restaurant near campus?</h2>
+      <h3>Search for it below.</h3>
+      <input
+        type="text"
+        value={globalFilter || ''}
+        onChange={e => setGlobalFilter(e.target.value)}
+        placeholder={`Search`}
+      />
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                /*sorting and filering */
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {column.render('Header')}
+                  {/* direction indicator */}
+                  <span
+                    style={{
+                      visibility: column.isSorted ? 'visible' : 'hidden',
+                    }}
+                  >
+                    {column.isSortedDesc ? ' 🔽' : ' 🔼'}
+                  </span>
+                </th>
+              ))}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
-    <div>
-       <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-         Previous Page
-       </button>
-       <button onClick={() => nextPage()} disabled={!canNextPage}>
-         Next Page
-       </button>
-       <div>
-         Page{' '}
-         <em>
-           {pageIndex + 1} of {pageOptions.length}
-         </em>
-       </div>
-     </div>
-  </div>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map(row => {
+            prepareRow(row);
+            console.log();
+            return (
+              <tr className = {row.values.status.includes("closed")? "closed" : "open"} {...row.getRowProps()}>
+                {row.cells.map(cell => {
+                  return (
+                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <div className="page">
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          {'<'}
+        </button>
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          {'>'}
+        </button>
+      </div>
+      <div className="pageNum">
+        Page 
+        <em>
+          {pageIndex + 1} of {pageOptions.length}
+        </em>
+      </div>
+      <p className="credit">Data reported by Noah Sheidlower, table created by Elizabeth Commisso and edited by Charlotte Li.</p>
+    </div>
+    </div>
   );
 }
 
@@ -158,23 +235,23 @@ function App() {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Name",
-        accessor: "name"
+        Header: 'Name',
+        accessor: 'name',
       },
       {
-        Header: "Status",
-        accessor: "status"
+        Header: 'Status',
+        accessor: 'status',
       },
       {
-        Header: "Outdoor Dining",
-        accessor: "outdoor"
+        Header: 'Outdoor Dining',
+        accessor: 'outdoor',
       },
       {
-        Header: "Tables",
-        accessor: "tables"
-      }
+        Header: 'Tables',
+        accessor: 'tables',
+      },
     ],
-    []
+    [],
   );
 
   const data = React.useMemo(
@@ -182,44 +259,8 @@ function App() {
       {
         name: "Friedman's",
         status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Elysian Fields",
-        status: "open",
         outdoor: "no",
         tables: ""
-      },
-      {
-        name: "Subs conscious",
-        status: "open",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Sliced",
-        status: "ooen",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Apple Tree",
-        status: "open",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Dunkin Donuts (121)",
-        status: "open",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Massawa",
-        status: "open",
-        outdoor: "yes",
-        tables: 5
       },
       {
         name: "Flat Top",
@@ -228,13 +269,157 @@ function App() {
         tables: ""
       },
       {
-        name: "Bar 314 (check)",
+        name: "Floridita",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Cascabel Taqueria",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "The West End Lounge",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Smoke Jazz & Supper Club",
+        status: "open",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Xi'an Famous Foods",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Mexican Festival",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Szechuan Garden",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Calle Ocho",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Chandni",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Zanny's",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Saiguette",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Bob's Your Uncle",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Roasted Masala",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Red Hot Hot Pot",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Nobody Told Me",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Arts and Crafts Beer Parlor",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "The Hamilton",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Marlow Bistro",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Community Food & Juice",
+        status: "closed",
+        outdoor: "no (renovations)",
+        tables: ""
+      },
+      {
+        name: "Elysian Fields Cafe",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Max Caffe",
+        name: "Subconscious",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Sliced",
+        status: "closed",
+        outdoor: "",
+        tables: ""
+      },
+      {
+        name: "Apple Tree Supermarket",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Dunkin’ - 121st and Amsterdam",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Bar 314",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Max Caffè",
         status: "open",
         outdoor: "yes",
         tables: 6
@@ -276,7 +461,7 @@ function App() {
         tables: 5
       },
       {
-        name: "Go! Go! Curry",
+        name: "Go! Go! Curry!",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -288,21 +473,15 @@ function App() {
         tables: ""
       },
       {
-        name: "Dinosaur BBQ",
-        status: "closed",
-        outdoor: "no (under construction)",
-        tables: ""
+        name: "Dinosaur Bar-B-Que",
+        status: "open",
+        outdoor: "yes",
+        tables: 5
       },
       {
-        name: "123BSB",
+        name: "123 Burger Shot Beer",
         status: "open",
         outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Floridita",
-        status: "closed",
-        outdoor: "",
         tables: ""
       },
       {
@@ -312,19 +491,13 @@ function App() {
         tables: 8
       },
       {
-        name: "Starbucks",
+        name: "Starbucks - 124th and Broadway",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Oasis Jimma",
-        status: "open",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Peking Garden",
+        name: "Oasis Jimma Juice Bar",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -336,7 +509,7 @@ function App() {
         tables: ""
       },
       {
-        name: "Toast",
+        name: "Toast Uptown",
         status: "open",
         outdoor: "yes",
         tables: 7
@@ -366,7 +539,7 @@ function App() {
         tables: 8
       },
       {
-        name: "Capt Loui",
+        name: "Cap't Loui",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -374,8 +547,8 @@ function App() {
       {
         name: "Bettolona",
         status: "open",
-        outdoor: "no (construction)",
-        tables: ""
+        outdoor: "yes",
+        tables: 4
       },
       {
         name: "La Salle Dumpling Room",
@@ -384,13 +557,13 @@ function App() {
         tables: ""
       },
       {
-        name: "Chokolat",
+        name: "Chokolat Patisserie & Culture Tea Bar",
         status: "open",
         outdoor: "yes",
         tables: 2
       },
       {
-        name: "Broadway au Lait",
+        name: "Broadway Au Lait",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -402,13 +575,7 @@ function App() {
         tables: ""
       },
       {
-        name: "Shake Shack",
-        status: "open",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Prêt a Manger",
+        name: "Pret A Manger",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -420,7 +587,7 @@ function App() {
         tables: ""
       },
       {
-        name: "Starbucks",
+        name: "Starbucks - 114th and Broadway",
         status: "open",
         outdoor: "yes",
         tables: 2
@@ -432,13 +599,13 @@ function App() {
         tables: ""
       },
       {
-        name: "Haagen-Dazs",
+        name: "Häagen-Dazs",
         status: "open",
         outdoor: "yes",
         tables: 4
       },
       {
-        name: "Blue Bottle Coffee (?)",
+        name: "Blue Bottle Coffee",
         status: "open",
         outdoor: "yes",
         tables: 7
@@ -456,25 +623,13 @@ function App() {
         tables: ""
       },
       {
-        name: "Community",
-        status: "closed",
-        outdoor: "no (renovations)",
-        tables: ""
-      },
-      {
-        name: "Le Monde",
-        status: "open",
-        outdoor: "yes",
-        tables: 16
-      },
-      {
         name: "Pinkberry",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Hex & Co",
+        name: "Hex & Company",
         status: "open",
         outdoor: "yes",
         tables: 4
@@ -486,19 +641,19 @@ function App() {
         tables: ""
       },
       {
-        name: "Heights",
+        name: "The Heights Bar & Grill",
         status: "open",
-        outdoor: "idk",
+        outdoor: "",
         tables: ""
       },
       {
-        name: "Samad's",
+        name: "Samad's Gourmet",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Famiglia",
+        name: "Famous Famiglia",
         status: "open",
         outdoor: "yes",
         tables: 4
@@ -528,39 +683,15 @@ function App() {
         tables: ""
       },
       {
-        name: "Cascabel Taqueria",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
         name: "Fumo",
         status: "open",
         outdoor: "yes",
         tables: 7
       },
       {
-        name: "The West End Lounge",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
         name: "Six Corners Marketplace",
         status: "open",
         outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Smoke",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Boulevard",
-        status: "closed",
-        outdoor: "",
         tables: ""
       },
       {
@@ -570,7 +701,7 @@ function App() {
         tables: ""
       },
       {
-        name: "Tap a Keg",
+        name: "Tap A Keg",
         status: "open",
         outdoor: "yes",
         tables: 6
@@ -588,16 +719,16 @@ function App() {
         tables: 2
       },
       {
-        name: "Broadway Pizza",
+        name: "Broadway Pizza & Restaurant",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Sun Chan",
+        name: "Yakitori Sun-Chan",
         status: "open",
-        outdoor: "no",
-        tables: ""
+        outdoor: "yes",
+        tables: 2
       },
       {
         name: "Ollie's",
@@ -612,13 +743,7 @@ function App() {
         tables: 3
       },
       {
-        name: "Xian",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Sal + Carmines",
+        name: "Sal & Carmine Pizza",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -654,7 +779,7 @@ function App() {
         tables: ""
       },
       {
-        name: "Naruto",
+        name: "Naruto Ramen",
         status: "open",
         outdoor: "yes",
         tables: "1-2"
@@ -678,12 +803,6 @@ function App() {
         tables: 5
       },
       {
-        name: "Mexican Festival",
-        status: "open",
-        outdoor: "closed",
-        tables: ""
-      },
-      {
         name: "Peaky Barista",
         status: "open",
         outdoor: "no",
@@ -702,34 +821,22 @@ function App() {
         tables: ""
       },
       {
-        name: "Silver Moon",
+        name: "Silver Moon Bakery",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Szechuan Garden",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Malaysian Grill",
+        name: "Malaysia Grill",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Mama's Too",
+        name: "Mama's TOO!",
         status: "open",
         outdoor: "yes",
         tables: 6
-      },
-      {
-        name: "Calle Ocho",
-        status: "closed",
-        outdoor: "",
-        tables: ""
       },
       {
         name: "Koko Wings",
@@ -744,7 +851,7 @@ function App() {
         tables: ""
       },
       {
-        name: "108 Food",
+        name: "108 Food Dried Hot Pot",
         status: "open",
         outdoor: "yes",
         tables: 2
@@ -774,13 +881,13 @@ function App() {
         tables: 4
       },
       {
-        name: "Mel's",
+        name: "Mel's Burger Bar",
         status: "open",
         outdoor: "yes",
         tables: 8
       },
       {
-        name: "Panda Garden",
+        name: "Panda Express",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -798,13 +905,13 @@ function App() {
         tables: "4-5"
       },
       {
-        name: "Oren's",
+        name: "Oren's Daily Roast",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Dig Inn",
+        name: "Dig",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -816,49 +923,85 @@ function App() {
         tables: ""
       },
       {
-        name: "Junzi",
+        name: "Junzi Kitchen",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Giovannie's",
+        name: "Miss Mamie's Spoonbread Too",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Miss Mamie's Spoonbread",
+        name: "Hunan Chen's Kitchen",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Hunan Chen",
-        status: "closed",
-        outdoor: "",
-        tables: ""
+        name: "Awash Ethiopian Restaurant",
+        status: "open",
+        outdoor: "yes",
+        tables: 5
       },
       {
-        name: "Chandni",
-        status: "closed",
-        outdoor: "",
-        tables: ""
+        name: "Cafe Roma",
+        status: "open",
+        outdoor: "yes",
+        tables: 1
       },
       {
-        name: "Frieda's",
+        name: "Casa Mexicana",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Zanny's",
-        status: "closed",
-        outdoor: "",
+        name: "GerSushi",
+        status: "open",
+        outdoor: "no",
         tables: ""
       },
       {
-        name: "Demitasse",
+        name: "Massawa",
+        status: "open",
+        outdoor: "yes",
+        tables: 5
+      },
+      {
+        name: "Peking Garden",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Shake Shack",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Le Monde",
+        status: "open",
+        outdoor: "yes",
+        tables: 16
+      },
+      {
+        name: "Giovanni’s Pizza",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Freda's Caribbean & Soul Cuisine",
+        status: "open",
+        outdoor: "no",
+        tables: ""
+      },
+      {
+        name: "Demitasse Coffee & Tea",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -876,7 +1019,7 @@ function App() {
         tables: ""
       },
       {
-        name: "Calaveras",
+        name: "The Calaveras",
         status: "open",
         outdoor: "yes",
         tables: 10
@@ -885,18 +1028,6 @@ function App() {
         name: "Doaba Deli",
         status: "open",
         outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Saiguette",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Bob's Your Uncle",
-        status: "open",
-        outdoor: "",
         tables: ""
       },
       {
@@ -912,21 +1043,9 @@ function App() {
         tables: ""
       },
       {
-        name: "Elsa",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Benny's",
+        name: "Benny’s Chao King",
         status: "open",
         outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Roasted Masala",
-        status: "closed",
-        outdoor: "",
         tables: ""
       },
       {
@@ -972,25 +1091,13 @@ function App() {
         tables: 9
       },
       {
-        name: "JuicC",
-        status: "open",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Ranch Deli",
-        status: "open",
-        outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Crêpes on Columbus",
+        name: "Crepes on Columbus",
         status: "open",
         outdoor: "yes",
         tables: 3
       },
       {
-        name: "Ortomare",
+        name: "Ortomare Ristorante Pizzeria",
         status: "open",
         outdoor: "yes",
         tables: 4
@@ -1002,13 +1109,7 @@ function App() {
         tables: 4
       },
       {
-        name: "Red Hot",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Lions Head",
+        name: "Lion's Head Tavern",
         status: "open",
         outdoor: "yes",
         tables: 16
@@ -1050,25 +1151,13 @@ function App() {
         tables: 4
       },
       {
-        name: "Nobody Told Me",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Awash",
-        status: "open",
-        outdoor: "yes",
-        tables: 5
-      },
-      {
-        name: "Mama's Pizza",
+        name: "Mama’s Pizzeria",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Anar",
+        name: "Anār",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -1086,12 +1175,6 @@ function App() {
         tables: 2
       },
       {
-        name: "Arts and Crafts",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
         name: "Hamilton Deli",
         status: "open",
         outdoor: "no",
@@ -1104,7 +1187,7 @@ function App() {
         tables: 5
       },
       {
-        name: "Raenu Thai",
+        name: "Raenu Continental Thai",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -1113,12 +1196,6 @@ function App() {
         name: "Mokja",
         status: "open",
         outdoor: "no",
-        tables: ""
-      },
-      {
-        name: "Cafe Roma",
-        status: "closed",
-        outdoor: "",
         tables: ""
       },
       {
@@ -1152,13 +1229,7 @@ function App() {
         tables: ""
       },
       {
-        name: "Casa Mexicana",
-        status: "check (setting up)",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Dunkin Donuts",
+        name: "Dunkin’ - 104th and Amsterdam",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -1212,7 +1283,7 @@ function App() {
         tables: 10
       },
       {
-        name: "Banh",
+        name: "Bánh",
         status: "open",
         outdoor: "yes",
         tables: 6
@@ -1224,25 +1295,25 @@ function App() {
         tables: 4
       },
       {
-        name: "Panchos",
+        name: "Pancho’s",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Suma",
+        name: "Suma Sushi",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "La Piccola Cuccina",
+        name: "La Piccola Cucina",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Taqueria y Fonda",
+        name: "Taqueria y Fonda La Mexicana",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -1254,37 +1325,25 @@ function App() {
         tables: "18-19"
       },
       {
-        name: "Gourmet Deli",
+        name: "109 Spicy Gourmet Deli",
         status: "open",
         outdoor: "no",
         tables: ""
       },
       {
-        name: "Rôti Roll",
+        name: "Roti Roll",
         status: "open",
         outdoor: "yes",
         tables: 5
       },
       {
-        name: "The Hamilton",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: "Elis",
+        name: "Elis Wine Bar and Restaurant",
         status: "open",
         outdoor: "yes",
         tables: 5
       },
       {
-        name: "Marlow",
-        status: "closed",
-        outdoor: "",
-        tables: ""
-      },
-      {
-        name: 1020,
+        name: "1020 Bar",
         status: "open",
         outdoor: "yes",
         tables: 4
@@ -1320,13 +1379,13 @@ function App() {
         tables: 5
       },
       {
-        name: "New York Basics",
+        name: "The New York Basics",
         status: "open",
-        outdoor: "no",
-        tables: ""
+        outdoor: "yes",
+        tables: 5
       },
       {
-        name: "Strokos",
+        name: "Strokos Gourmet Deli",
         status: "open",
         outdoor: "no",
         tables: ""
@@ -1336,15 +1395,14 @@ function App() {
         status: "open",
         outdoor: "no",
         tables: ""
-      },
+      }
     ],
-  []
+    [],
   );
 
   return (
     <Styles>
-      <Table columns={columns} 
-      data={data} />
+      <Table columns={columns} data={data} />
     </Styles>
   );
 }

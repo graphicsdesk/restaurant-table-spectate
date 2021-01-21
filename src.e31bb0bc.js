@@ -48,4 +48,4 @@ module.exports=require("./dist/react-table.production.min.js");
 },{"react":"n8MK","styled-components":"tFSs","react-table":"XyyI"}],"Focm":[function(require,module,exports) {
 "use strict";var e=u(require("react")),t=u(require("react-dom")),r=u(require("./App"));function u(e){return e&&e.__esModule?e:{default:e}}t.default.render(e.default.createElement(e.default.StrictMode,null,e.default.createElement(r.default,null)),document.getElementById("graphic"));
 },{"react":"n8MK","react-dom":"NKHc","./App":"lY9v"}]},{},["Focm"], "script")
-//# sourceMappingURL=src.e31bb0bc.js.map
+//# sourceMappingURL=https://spectator-static-assets.s3.amazonaws.com/restaurant-table-spectate/src.e31bb0bc.js.map
